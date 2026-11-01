@@ -1,7 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { LowPolyLandscape } from './LowPolyLandscape';
 import { SkyEnvironment } from './SkyEnvironment';
 import { RainParticles } from './RainParticles';
 import { SnowParticles } from './SnowParticles';
@@ -96,17 +95,6 @@ export function WeatherCanvas({
         <FogController
           weatherCategory={weatherState.weatherCategory}
           isDay={weatherState.isDay}
-          themeColors={themeColors}
-        />
-
-        {/* Interactive 3D Weather Globe */}
-        <LowPolyLandscape
-          isSnowing={isSnowing}
-          windSpeed={weatherState.windSpeed}
-          isDay={weatherState.isDay}
-          isRaining={isRaining}
-          latitude={weatherState.latitude}
-          longitude={weatherState.longitude}
           themeColors={themeColors}
         />
 

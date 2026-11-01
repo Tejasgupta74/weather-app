@@ -1,4 +1,4 @@
-import { MapPin } from 'lucide-react';
+import { LocateFixed, Navigation } from 'lucide-react';
 import { UnitSystem, formatWindSpeed, getWindDirectionCardinal } from '../../utils/unitConversion';
 
 interface WindMapCardProps {
@@ -35,45 +35,39 @@ export function WindMapCard({
     <div className="glass-card rounded-2xl p-5 select-none flex items-center justify-between">
       {/* Left: Wind Metrics */}
       <div className="space-y-1">
-        <h3 className="text-xs font-semibold text-slate-400">Wind Map</h3>
-        <div className="text-lg md:text-xl font-bold font-mono text-white">
+        <h3 className="text-xs font-semibold text-theme-text/70 tracking-tight">Wind Conditions</h3>
+        <div className="text-lg md:text-xl font-bold font-mono text-theme-text">
           {speedStr}
         </div>
-        <p className="text-xs text-slate-400 font-medium">
-          {getFullCardinal(cardinal)}
+        <p className="text-xs text-theme-text/70 font-medium">
+          {getFullCardinal(cardinal)} ({windDirection}°)
         </p>
       </div>
 
-      {/* Right: Stylized Dark Swirl Radar Tile with MapPin Button */}
-      <div className="relative w-24 h-20 rounded-xl overflow-hidden border border-white/10 flex items-center justify-center bg-slate-900 group">
-        {/* Animated Radial / Conical Wind Stream Contours */}
+      {/* Right: Static Wind Direction Compass Indicator with Locate Button */}
+      <div className="flex items-center space-x-2.5">
         <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage: `radial-gradient(circle at center, transparent 30%, rgba(56, 189, 248, 0.2) 32%, transparent 35%, rgba(56, 189, 248, 0.25) 55%, transparent 60%)`,
-          }}
-        />
-
-        {/* Animated Rotating Radar Scan Line */}
-        <div
-          className="absolute inset-0 animate-spin"
-          style={{
-            animationDuration: '8s',
-            background:
-              'conic-gradient(from 0deg, transparent 0deg, rgba(56, 189, 248, 0.25) 60deg, transparent 90deg)',
-          }}
-        />
-
-        {/* Interactive Location Target Button */}
-        <button
-          type="button"
-          onClick={onLocate}
-          className="relative z-10 w-9 h-9 rounded-full bg-white text-slate-900 shadow-lg flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"
-          title="Detect Current GPS Location"
-          aria-label="Detect Current GPS Location"
+          className="w-11 h-11 rounded-lg border border-theme-text/10 bg-theme-text/5 flex items-center justify-center text-theme-sky"
+          title={`Wind direction: ${windDirection} degrees`}
+          aria-label={`Wind direction: ${windDirection} degrees`}
         >
-          <MapPin className="w-4 h-4 fill-slate-900" />
-        </button>
+          <Navigation
+            className="w-5 h-5 transition-transform duration-500"
+            style={{ transform: `rotate(${windDirection}deg)` }}
+          />
+        </div>
+
+        {onLocate && (
+          <button
+            type="button"
+            onClick={onLocate}
+            className="w-11 h-11 rounded-lg border border-theme-text/10 bg-theme-text/5 hover:bg-theme-text/10 text-theme-text transition-colors flex items-center justify-center"
+            title="Detect current location"
+            aria-label="Detect current location"
+          >
+            <LocateFixed className="w-4 h-4 text-theme-sky" />
+          </button>
+        )}
       </div>
     </div>
   );
