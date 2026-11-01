@@ -7,6 +7,11 @@ export default {
   theme: {
     extend: {
       colors: {
+        theme: {
+          sky: 'rgb(var(--color-sky) / <alpha-value>)',
+          surface: 'rgb(var(--color-surface) / <alpha-value>)',
+          text: 'rgb(var(--color-text) / <alpha-value>)',
+        },
         canvas: {
           dark: '#0B0F17',
           light: '#F1F5F9',
