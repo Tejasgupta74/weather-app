@@ -3,6 +3,7 @@ import { NormalizedWeatherData, OpenMeteoRawResponse, HourlyForecastItem, DailyF
 import { CityLocation } from '../types/geo';
 import { weatherCodeMap } from '../utils/weatherCodeMap';
 import { weatherMemoryCache } from '../utils/cache';
+import { getLocationLocalTime } from '../utils/solarPosition';
 import { OPEN_METEO_FORECAST_URL, CACHE_TTL_MS } from '../constants/config';
 
 export function normalizeWeatherData(raw: OpenMeteoRawResponse, locationName: string): NormalizedWeatherData {
@@ -11,25 +12,29 @@ export function normalizeWeatherData(raw: OpenMeteoRawResponse, locationName: st
   const sunrise = raw.daily.sunrise[0] || '';
   const sunset = raw.daily.sunset[0] || '';
 
-  // 24-hour hourly forecast
-  const nowIsoHour = new Date().toISOString().slice(0, 13);
+  // 24-hour hourly forecast anchored to location's local time
+  const locationTime = getLocationLocalTime(raw.utc_offset_seconds);
   const startIndex = Math.max(
     0,
-    raw.hourly.time.findIndex((t) => t.startsWith(nowIsoHour))
+    raw.hourly.time.findIndex((t) => t.startsWith(locationTime.isoHour))
   );
   const hourlySliceIndices = Array.from({ length: 24 }, (_, i) => startIndex + i).filter(
     (idx) => idx < raw.hourly.time.length
   );
 
-  const hourly: HourlyForecastItem[] = hourlySliceIndices.map((idx) => {
-    const isDay = Boolean(raw.hourly.is_day[idx]);
-    const code = raw.hourly.weather_code[idx] ?? 0;
+  const hourly: HourlyForecastItem[] = hourlySliceIndices.map((idx, sliceIdx) => {
+    const isNow = sliceIdx === 0;
+    const isDay = isNow ? isDayCurrent : Boolean(raw.hourly.is_day[idx]);
+    const code = isNow ? raw.current.weather_code : (raw.hourly.weather_code[idx] ?? 0);
+    const temp = isNow ? Math.round(raw.current.temperature_2m) : Math.round(raw.hourly.temperature_2m[idx] ?? 0);
+    const precip = isNow ? raw.current.precipitation : (raw.hourly.precipitation[idx] ?? 0);
+
     return {
       time: raw.hourly.time[idx],
-      temperature: Math.round(raw.hourly.temperature_2m[idx] ?? 0),
-      precipitation: raw.hourly.precipitation[idx] ?? 0,
+      temperature: temp,
+      precipitation: precip,
       weatherCode: code,
-      condition: weatherCodeMap(code, isDay),
+      condition: isNow ? currentCondition : weatherCodeMap(code, isDay),
       isDay,
     };
   });
@@ -55,6 +60,7 @@ export function normalizeWeatherData(raw: OpenMeteoRawResponse, locationName: st
     latitude: raw.latitude,
     longitude: raw.longitude,
     timezone: raw.timezone,
+    utcOffsetSeconds: raw.utc_offset_seconds,
     fetchedAt: Date.now(),
     current: {
       temperature: Math.round(raw.current.temperature_2m),

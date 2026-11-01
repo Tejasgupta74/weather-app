@@ -7,8 +7,59 @@ export interface SolarPosition {
 
 export type Phase = 'dawn' | 'day' | 'dusk' | 'night';
 
+export interface LocationTime {
+  date: Date;
+  isoHour: string;
+  isoString: string;
+  formattedDate: string;
+  hour: number;
+}
+
 const WINDOW_MS = 45 * 60 * 1000;
 const HALF_WINDOW_MS = WINDOW_MS / 2;
+
+export function parseLocalTimestamp(isoStr?: string | null): number {
+  if (!isoStr) return NaN;
+  const clean = isoStr.endsWith('Z') || isoStr.includes('+') || (isoStr.includes('-') && isoStr.length > 19)
+    ? isoStr
+    : `${isoStr}Z`;
+  return new Date(clean).getTime();
+}
+
+export function getLocationLocalTime(
+  utcOffsetSeconds = 0,
+  baseUtcTime: number | Date | string = Date.now()
+): LocationTime {
+  const utcMs = typeof baseUtcTime === 'number' ? baseUtcTime : new Date(baseUtcTime).getTime();
+  const localMs = utcMs + utcOffsetSeconds * 1000;
+  const d = new Date(localMs);
+
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  const hour = d.getUTCHours();
+  const hourStr = String(hour).padStart(2, '0');
+  const minute = String(d.getUTCMinutes()).padStart(2, '0');
+  const second = String(d.getUTCSeconds()).padStart(2, '0');
+
+  const isoHour = `${year}-${month}-${day}T${hourStr}`;
+  const isoString = `${isoHour}:${minute}:${second}`;
+
+  const weekdayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const formattedDate = `${weekdayNames[d.getUTCDay()]}, ${monthNames[d.getUTCMonth()]} ${d.getUTCDate()}`;
+
+  return {
+    date: d,
+    isoHour,
+    isoString,
+    formattedDate,
+    hour,
+  };
+}
 
 export function getPhase(
   currentTime: Date | string | number,
@@ -16,9 +67,14 @@ export function getPhase(
   sunset?: string | null,
   isDayFallback = true
 ): Phase {
-  const now = new Date(currentTime).getTime();
-  const sunriseTime = sunrise ? new Date(sunrise).getTime() : NaN;
-  const sunsetTime = sunset ? new Date(sunset).getTime() : NaN;
+  const now = typeof currentTime === 'number'
+    ? currentTime
+    : currentTime instanceof Date
+    ? currentTime.getTime()
+    : parseLocalTimestamp(currentTime);
+
+  const sunriseTime = parseLocalTimestamp(sunrise);
+  const sunsetTime = parseLocalTimestamp(sunset);
 
   if (Number.isNaN(sunriseTime) || Number.isNaN(sunsetTime)) {
     return isDayFallback ? 'day' : 'night';
@@ -30,44 +86,19 @@ export function getPhase(
   return 'night';
 }
 
-export function getLocalTimeInTimezone(timezone?: string): Date {
-  if (!timezone) return new Date();
-  try {
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      timeZone: timezone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
-    const parts = formatter.formatToParts(new Date());
-    const getPart = (type: string) => parts.find((p) => p.type === type)?.value || '0';
-    return new Date(
-      Date.UTC(
-        Number(getPart('year')),
-        Number(getPart('month')) - 1,
-        Number(getPart('day')),
-        Number(getPart('hour')),
-        Number(getPart('minute')),
-        Number(getPart('second'))
-      )
-    );
-  } catch {
-    return new Date();
-  }
-}
-
 export function calculateSolarPosition(
   currentTime: Date | string | number,
-  sunrise: string,
-  sunset: string
+  sunrise?: string | null,
+  sunset?: string | null
 ): SolarPosition {
-  const now = new Date(currentTime).getTime();
-  const sunriseTime = new Date(sunrise).getTime();
-  const sunsetTime = new Date(sunset).getTime();
+  const now = typeof currentTime === 'number'
+    ? currentTime
+    : currentTime instanceof Date
+    ? currentTime.getTime()
+    : parseLocalTimestamp(currentTime);
+
+  const sunriseTime = parseLocalTimestamp(sunrise);
+  const sunsetTime = parseLocalTimestamp(sunset);
 
   if (Number.isNaN(sunriseTime) || Number.isNaN(sunsetTime)) {
     return {

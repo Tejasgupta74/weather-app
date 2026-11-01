@@ -12,12 +12,11 @@ export function HourlyStrip({ hourly, unit }: HourlyStripProps) {
 
   const formatHour = (isoString: string, index: number) => {
     if (index === 0) return 'Now';
-    try {
-      const date = new Date(isoString);
-      return date.toLocaleTimeString([], { hour: 'numeric', hour12: true });
-    } catch {
-      return isoString.slice(11, 16);
-    }
+    const hour = parseInt(isoString.slice(11, 13), 10);
+    if (Number.isNaN(hour)) return isoString.slice(11, 16);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+    return `${displayHour} ${period}`;
   };
 
   return (

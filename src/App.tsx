@@ -3,7 +3,7 @@ import { useGeolocation } from './hooks/useGeolocation';
 import { useWeather } from './hooks/useWeather';
 import { usePreferences } from './hooks/usePreferences';
 import { useWeatherTheme } from './hooks/useWeatherTheme';
-import { getPhase, getLocalTimeInTimezone, calculateSolarPosition } from './utils/solarPosition';
+import { getPhase, calculateSolarPosition, getLocationLocalTime } from './utils/solarPosition';
 import { CityLocation } from './types/geo';
 import { SceneWeatherState } from './types/scene';
 
@@ -50,29 +50,32 @@ export default function App() {
   // 1. Normalized weather condition category
   const condition = weather?.current.condition.category || 'clear';
 
-  // 2. Solar phase computed from searched location time (not browser time)
+  // 2. Location local time from Open-Meteo utc_offset_seconds as single source of truth
+  const locationTime = useMemo(() => {
+    return getLocationLocalTime(weather?.utcOffsetSeconds ?? 0);
+  }, [weather?.utcOffsetSeconds]);
+
+  // 3. Solar phase computed from searched location time (not browser time)
   const phase = useMemo(() => {
-    const localNow = getLocalTimeInTimezone(weather?.timezone);
     return getPhase(
-      localNow,
+      locationTime.date,
       weather?.current.sunrise,
       weather?.current.sunset,
       weather?.current.isDay ?? true
     );
-  }, [weather?.timezone, weather?.current.sunrise, weather?.current.sunset, weather?.current.isDay]);
+  }, [locationTime, weather?.current.sunrise, weather?.current.sunset, weather?.current.isDay]);
 
-  // 3. Dynamic weather theme hook (sets CSS variables on document.documentElement)
+  // 4. Dynamic weather theme hook (sets CSS variables on document.documentElement)
   const theme = useWeatherTheme(condition, phase);
 
-  // 4. Solar arc calculation for 3D celestial tracking
+  // 5. Solar arc calculation for 3D celestial tracking
   const solar = useMemo(() => {
-    const localNow = getLocalTimeInTimezone(weather?.timezone);
     return calculateSolarPosition(
-      localNow,
+      locationTime.date,
       weather?.current.sunrise || '',
       weather?.current.sunset || ''
     );
-  }, [weather?.timezone, weather?.current.sunrise, weather?.current.sunset]);
+  }, [locationTime, weather?.current.sunrise, weather?.current.sunset]);
 
   // 5. 3D Scene state
   const sceneState: SceneWeatherState = useMemo(
@@ -106,6 +109,7 @@ export default function App() {
         {/* Top Bar Header */}
         <TopBar
           locationName={weather?.locationName || location?.name || 'Locating...'}
+          formattedDate={weather ? locationTime.formattedDate : undefined}
           onSelectCity={handleSelectCity}
           unit={unit}
           onToggleUnit={toggleUnit}

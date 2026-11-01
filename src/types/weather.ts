@@ -55,6 +55,7 @@ export interface NormalizedWeatherData {
   latitude: number;
   longitude: number;
   timezone: string;
+  utcOffsetSeconds: number;
   current: CurrentWeather;
   hourly: HourlyForecastItem[];
   daily: DailyForecastItem[];
@@ -65,6 +66,7 @@ export interface OpenMeteoRawResponse {
   latitude: number;
   longitude: number;
   timezone: string;
+  utc_offset_seconds: number;
   current: {
     time: string;
     temperature_2m: number;

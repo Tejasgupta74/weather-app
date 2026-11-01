@@ -6,6 +6,7 @@ import { useGeocoding } from '../../hooks/useGeocoding';
 
 interface TopBarProps {
   locationName: string;
+  formattedDate?: string;
   onSelectCity: (city: CityLocation) => void;
   unit: UnitSystem;
   onToggleUnit: () => void;
@@ -16,6 +17,7 @@ interface TopBarProps {
 
 export function TopBar({
   locationName,
+  formattedDate,
   onSelectCity,
   unit,
   onToggleUnit,
@@ -61,7 +63,7 @@ export function TopBar({
             {locationName}
           </h1>
           <p className="text-xs text-theme-text/60 font-medium">
-            {todayFormatted}
+            {formattedDate || todayFormatted}
           </p>
         </div>
       </div>
