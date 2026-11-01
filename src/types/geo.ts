@@ -10,6 +10,8 @@ export interface CityLocation extends LocationCoords {
   countryCode?: string;
   admin1?: string;
   timezone?: string;
+  temperature?: number;
+  conditionLabel?: string;
 }
 
 export interface GeocodingResultItem {

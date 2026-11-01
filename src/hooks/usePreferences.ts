@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { UnitSystem } from '../utils/unitConversion';
 import { CityLocation } from '../types/geo';
 import { STORAGE_KEYS } from '../constants/config';
@@ -24,20 +24,28 @@ export function usePreferences() {
     }
   });
 
-  const setUnit = (newUnit: UnitSystem) => {
+  const setUnit = useCallback((newUnit: UnitSystem) => {
     setUnitState(newUnit);
     try {
       localStorage.setItem(STORAGE_KEYS.UNIT_PREFERENCE, newUnit);
     } catch {
       // storage unavailable
     }
-  };
+  }, []);
 
-  const toggleUnit = () => {
-    setUnit(unit === 'metric' ? 'imperial' : 'metric');
-  };
+  const toggleUnit = useCallback(() => {
+    setUnitState((prev) => {
+      const next = prev === 'metric' ? 'imperial' : 'metric';
+      try {
+        localStorage.setItem(STORAGE_KEYS.UNIT_PREFERENCE, next);
+      } catch {
+        // storage unavailable
+      }
+      return next;
+    });
+  }, []);
 
-  const addRecentLocation = (city: CityLocation) => {
+  const addRecentLocation = useCallback((city: CityLocation) => {
     setRecentLocations((prev) => {
       const filtered = prev.filter(
         (item) =>
@@ -52,7 +60,7 @@ export function usePreferences() {
       }
       return updated;
     });
-  };
+  }, []);
 
   return {
     unit,

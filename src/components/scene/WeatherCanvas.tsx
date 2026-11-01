@@ -107,6 +107,7 @@ export function WeatherCanvas({
           isRaining={isRaining}
           latitude={weatherState.latitude}
           longitude={weatherState.longitude}
+          themeColors={themeColors}
         />
 
         {/* Cloud Layers driven by cloudCover & wind */}

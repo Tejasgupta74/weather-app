@@ -5,26 +5,15 @@ interface HeroBannerProps {
   current: CurrentWeather;
   todayDaily?: DailyForecastItem;
   unit: UnitSystem;
-  backdropUrl?: string;
 }
 
-export function HeroBanner({ current, todayDaily, unit, backdropUrl }: HeroBannerProps) {
+export function HeroBanner({ current, todayDaily, unit }: HeroBannerProps) {
   const currentTemp = formatTemperature(current.temperature, unit);
   const maxTemp = todayDaily ? formatTemperature(todayDaily.temperatureMax, unit) : '';
   const minTemp = todayDaily ? formatTemperature(todayDaily.temperatureMin, unit) : '';
 
-  const bannerImage = backdropUrl || 'https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=1200&q=80';
-
   return (
-    <div className="relative rounded-2xl overflow-hidden glass-card shadow-2xl min-h-[220px] flex items-center p-6 md:p-8 select-none">
-      {/* Background Image with Atmospheric Darkness Overlay */}
-      <img
-        src={bannerImage}
-        alt="Weather atmosphere"
-        className="absolute inset-0 w-full h-full object-cover object-center opacity-75 transition-opacity duration-700"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#121418]/90 via-[#161920]/65 to-[#121418]/40" />
-
+    <div className="relative rounded-2xl overflow-hidden glass-card shadow-2xl min-h-[160px] flex items-center p-6 md:p-8 select-none">
       {/* Foreground Content */}
       <div className="relative z-10 w-full flex flex-col md:flex-row md:items-center justify-between gap-6">
         {/* Left: Metrics & Condition */}
@@ -52,11 +41,6 @@ export function HeroBanner({ current, todayDaily, unit, backdropUrl }: HeroBanne
               </span>
             </div>
           )}
-        </div>
-
-        {/* Right: Technical Subtext */}
-        <div className="max-w-xs text-xs text-theme-text/80 leading-relaxed md:text-right font-normal">
-          With real time data and advanced technology, we provide reliable forecasts for any location around the world.
         </div>
       </div>
     </div>

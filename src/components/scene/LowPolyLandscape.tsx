@@ -9,6 +9,11 @@ interface LowPolyLandscapeProps {
   isRaining?: boolean;
   latitude?: number;
   longitude?: number;
+  themeColors?: {
+    sky: string;
+    surface: string;
+    text: string;
+  };
 }
 
 const GLOBE_RADIUS = 3.0;
@@ -39,9 +44,9 @@ export function LowPolyLandscape({
   const pinBeaconRef = useRef<THREE.Mesh>(null);
   const pinRingRef = useRef<THREE.Mesh>(null);
 
-  // Surface colors adapt to winter snow conditions
+  // Surface colors adapt to winter snow conditions and day/night cycle
   const landColor = isSnowing ? '#E2E8F0' : '#15803D';
-  const oceanColor = '#0F172A';
+  const oceanColor = isDay ? '#1E3A8A' : '#0F172A';
 
   // Major continental anchor clusters on the sphere surface
   const continentAnchors = useMemo(

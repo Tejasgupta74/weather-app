@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useWeather } from './hooks/useWeather';
 import { usePreferences } from './hooks/usePreferences';
@@ -28,6 +28,16 @@ export default function App() {
     },
     [setLocation, addRecentLocation]
   );
+
+  useEffect(() => {
+    if (weather && location && location.name) {
+      addRecentLocation({
+        ...location,
+        temperature: weather.current.temperature,
+        conditionLabel: weather.current.condition.label,
+      });
+    }
+  }, [weather, location, addRecentLocation]);
 
   const handleResetGeolocation = useCallback(() => {
     if ('geolocation' in navigator) {
@@ -143,6 +153,7 @@ export default function App() {
             <div className="lg:col-span-4 space-y-4 w-full">
               <LiveConditionsCard
                 current={weather.current}
+                hourly={weather.hourly}
                 unit={unit}
                 accentStroke={theme.sky}
               />
