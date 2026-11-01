@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useState } from 'react';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useWeather } from './hooks/useWeather';
 import { usePreferences } from './hooks/usePreferences';
@@ -60,10 +60,18 @@ export default function App() {
   // 1. Normalized weather condition category
   const condition = weather?.current.condition.category || 'clear';
 
+  // Live real-time clock tick for location time
+  const [currentUtcMs, setCurrentUtcMs] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentUtcMs(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   // 2. Location local time from Open-Meteo utc_offset_seconds as single source of truth
   const locationTime = useMemo(() => {
-    return getLocationLocalTime(weather?.utcOffsetSeconds ?? 0);
-  }, [weather?.utcOffsetSeconds]);
+    return getLocationLocalTime(weather?.utcOffsetSeconds ?? 0, currentUtcMs);
+  }, [weather?.utcOffsetSeconds, currentUtcMs]);
 
   // 3. Solar phase computed from searched location time (not browser time)
   const phase = useMemo(() => {
@@ -120,6 +128,7 @@ export default function App() {
         <TopBar
           locationName={weather?.locationName || location?.name || 'Locating...'}
           formattedDate={weather ? locationTime.formattedDate : undefined}
+          formattedTime={weather ? locationTime.formattedTime : undefined}
           onSelectCity={handleSelectCity}
           unit={unit}
           onToggleUnit={toggleUnit}
@@ -144,6 +153,7 @@ export default function App() {
                 current={weather.current}
                 todayDaily={weather.daily[0]}
                 unit={unit}
+                localTime={locationTime.formattedTime}
               />
               <HourlyStrip hourly={weather.hourly} unit={unit} />
               <DailyForecastGrid daily={weather.daily} unit={unit} />

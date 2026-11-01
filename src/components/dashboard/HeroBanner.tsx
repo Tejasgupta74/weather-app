@@ -5,9 +5,10 @@ interface HeroBannerProps {
   current: CurrentWeather;
   todayDaily?: DailyForecastItem;
   unit: UnitSystem;
+  localTime?: string;
 }
 
-export function HeroBanner({ current, todayDaily, unit }: HeroBannerProps) {
+export function HeroBanner({ current, todayDaily, unit, localTime }: HeroBannerProps) {
   const currentTemp = formatTemperature(current.temperature, unit);
   const maxTemp = todayDaily ? formatTemperature(todayDaily.temperatureMax, unit) : '';
   const minTemp = todayDaily ? formatTemperature(todayDaily.temperatureMin, unit) : '';
@@ -42,6 +43,18 @@ export function HeroBanner({ current, todayDaily, unit }: HeroBannerProps) {
             </div>
           )}
         </div>
+
+        {/* Right: Local Time Display */}
+        {localTime && (
+          <div className="text-left md:text-right pt-2 md:pt-0 border-t md:border-t-0 border-theme-text/10">
+            <div className="text-4xl md:text-5xl font-mono font-light tracking-tight text-theme-text leading-none">
+              {localTime}
+            </div>
+            <p className="text-xs text-theme-text/70 font-medium mt-1.5">
+              Local Time
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

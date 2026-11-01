@@ -125,6 +125,8 @@ describe('Multi-city location time and day/night determination', () => {
     const local = getLocationLocalTime(14400, utcTime);
 
     expect(local.hour).toBe(12);
+    expect(local.minute).toBe(0);
+    expect(local.formattedTime).toBe('12:00 PM');
     expect(local.isoHour).toBe('2026-11-01T12');
     expect(getPhase(local.date, sunrise, sunset)).toBe('day');
     expect(calculateSolarPosition(local.date, sunrise, sunset).isDay).toBe(true);
@@ -137,6 +139,8 @@ describe('Multi-city location time and day/night determination', () => {
     const local = getLocationLocalTime(-28800, utcTime);
 
     expect(local.hour).toBe(3);
+    expect(local.minute).toBe(0);
+    expect(local.formattedTime).toBe('3:00 AM');
     expect(local.isoHour).toBe('2026-11-01T03');
     expect(getPhase(local.date, sunrise, sunset)).toBe('night');
     expect(calculateSolarPosition(local.date, sunrise, sunset).isDay).toBe(false);

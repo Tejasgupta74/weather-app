@@ -12,7 +12,9 @@ export interface LocationTime {
   isoHour: string;
   isoString: string;
   formattedDate: string;
+  formattedTime: string;
   hour: number;
+  minute: number;
 }
 
 const WINDOW_MS = 45 * 60 * 1000;
@@ -52,12 +54,20 @@ export function getLocationLocalTime(
   ];
   const formattedDate = `${weekdayNames[d.getUTCDay()]}, ${monthNames[d.getUTCMonth()]} ${d.getUTCDate()}`;
 
+  const minuteNum = d.getUTCMinutes();
+  const minuteStr = String(minuteNum).padStart(2, '0');
+  const hour12 = hour % 12 || 12;
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const formattedTime = `${hour12}:${minuteStr} ${ampm}`;
+
   return {
     date: d,
     isoHour,
     isoString,
     formattedDate,
+    formattedTime,
     hour,
+    minute: minuteNum,
   };
 }
 
