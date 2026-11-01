@@ -191,7 +191,7 @@ Cards float over the 3D canvas and rely on backdrop filters rather than heavy dr
 
 ---
 
-## 9. Accessibility Specifications (WCAG 2.1 AA)
+## 9. Accessibility Specifications (Designed for WCAG 2.1 AA)
 1. **Contrast Ratios:**
    - All text rendered over glassmorphic overlays maintains a minimum 4.5:1 contrast ratio against the blurred background.
    - Large display temperature figures (64px) maintain at least 3.0:1 contrast ratio.

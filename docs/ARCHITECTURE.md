@@ -79,7 +79,7 @@ flowchart TD
 ## 3. Directory Structure and Architectural Boundaries
 
 ```
-d:/wheather app/
+weather-app/
 ├── docs/                      # 8 pre-code architecture and specification docs
 │   ├── PRD.md
 │   ├── DESIGN_SYSTEM.md

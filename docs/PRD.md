@@ -25,7 +25,7 @@ This project delivers a high-performance web application that connects live mete
 - **Reactive 3D Low-Poly Landscape:** Render an instanced Three.js scene (hills, trees, low-poly house, sun, moon, stars) that updates its lighting, sky color, fog, and particle systems in direct response to live weather metrics.
 - **Zero-Allocation Rendering Performance:** Maintain consistent 60 frames per second on desktop and 30 to 60 frames per second on mobile by using instanced particle buffers (`useMemo`, `useRef`), eliminating per-frame garbage collection.
 - **Smooth Weather Transitions:** Interpolate lighting, sky colors, fog density, and particle velocities smoothly when changing target locations, avoiding sudden visual cuts.
-- **Accessible, Responsive Overlay UI:** Deliver a structured, WCAG AA compliant overlay with search autocomplete, unit toggles, hourly strips, and 7-day forecast cards that adapts seamlessly to desktop and mobile displays.
+- **Accessible, Responsive Overlay UI:** Deliver a structured overlay designed for WCAG AA contrast standards with search autocomplete, unit toggles, hourly strips, and 7-day forecast cards that adapts seamlessly to desktop and mobile displays.
 - **Local-First Reliability:** Cache API responses for 5 minutes in memory, save unit preferences and recent locations in `localStorage`, and provide graceful fallbacks (browser geolocation, then default city).
 
 ---
@@ -116,7 +116,7 @@ so that I can plan my day without squinting or navigating multiple menus.
 - [ ] Displays secondary metrics: feels-like temperature, humidity percentage, wind speed, UV index.
 - [ ] Displays a horizontal 24-hour hourly forecast strip showing time, icon/glyph, and temperature.
 - [ ] Displays a 7-day forecast cards section showing weekday, condition, and min/max bars.
-- [ ] Adheres to WCAG AA contrast standards over dynamic 3D canvas backgrounds via backdrop blur.
+- [ ] Designed for WCAG AA contrast standards over dynamic canvas backgrounds via backdrop blur.
 
 ### US-6: Unit Preference and Persistence
 As an international user,  
