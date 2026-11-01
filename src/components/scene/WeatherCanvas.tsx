@@ -9,9 +9,16 @@ import { CloudLayers } from './CloudLayers';
 import { FogController } from './FogController';
 import { LightningEffect } from './LightningEffect';
 import { SceneWeatherState } from '../../types/scene';
+import { Phase } from '../../utils/solarPosition';
 
 interface WeatherCanvasProps {
   weatherState: SceneWeatherState;
+  themeColors?: {
+    sky: string;
+    surface: string;
+    text: string;
+  };
+  phase?: Phase;
   children?: React.ReactNode;
 }
 
@@ -37,7 +44,12 @@ function CameraParallaxRig() {
   return null;
 }
 
-export function WeatherCanvas({ weatherState, children }: WeatherCanvasProps) {
+export function WeatherCanvas({
+  weatherState,
+  themeColors,
+  phase,
+  children,
+}: WeatherCanvasProps) {
   const isSnowing = weatherState.weatherCategory === 'snow';
   const isRaining =
     weatherState.weatherCategory === 'rain' ||
@@ -53,7 +65,9 @@ export function WeatherCanvas({ weatherState, children }: WeatherCanvasProps) {
         camera={{ position: [0, 3.2, 10.5], fov: 45 }}
         gl={{ antialias: true, alpha: false }}
         onCreated={({ scene }) => {
-          scene.background = new THREE.Color(weatherState.isDay ? '#38BDF8' : '#0B0F17');
+          scene.background = new THREE.Color(
+            themeColors?.sky || (weatherState.isDay ? '#38BDF8' : '#0B0F17')
+          );
         }}
       >
         <CameraParallaxRig />
@@ -73,12 +87,15 @@ export function WeatherCanvas({ weatherState, children }: WeatherCanvasProps) {
           isDay={weatherState.isDay}
           sunAngle={weatherState.sunAngle}
           ambientFactor={weatherState.ambientFactor}
+          themeColors={themeColors}
+          phase={phase}
         />
 
         {/* Scene Fog Controller */}
         <FogController
           weatherCategory={weatherState.weatherCategory}
           isDay={weatherState.isDay}
+          themeColors={themeColors}
         />
 
         {/* Interactive 3D Weather Globe */}

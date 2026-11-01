@@ -20,14 +20,14 @@ export function DailyForecastList({ daily, unit }: DailyForecastListProps) {
 
   return (
     <div className="glass-panel p-4 md:p-5 rounded-xl w-full space-y-3">
-      <div className="flex items-center justify-between pb-2 border-b border-slate-700/60">
-        <h3 className="text-xs uppercase tracking-wider font-mono text-slate-400">
+      <div className="flex items-center justify-between pb-2 border-b border-theme-text/10">
+        <h3 className="text-xs uppercase tracking-wider font-mono text-theme-text/60">
           7-Day Forecast
         </h3>
-        <span className="text-xs text-slate-500 font-mono">Daily Outlook</span>
+        <span className="text-xs text-theme-text/40 font-mono">Daily Outlook</span>
       </div>
 
-      <div className="divide-y divide-slate-800/80">
+      <div className="divide-y divide-theme-text/10">
         {daily.map((item, index) => {
           const maxTemp = formatTemperature(item.temperatureMax, unit);
           const minTemp = formatTemperature(item.temperatureMin, unit);
@@ -35,28 +35,28 @@ export function DailyForecastList({ daily, unit }: DailyForecastListProps) {
           return (
             <div
               key={item.date}
-              className="py-2.5 flex items-center justify-between text-sm group hover:bg-slate-800/30 px-1.5 rounded transition-colors"
+              className="py-2.5 flex items-center justify-between text-sm group hover:bg-theme-surface/50 px-1.5 rounded transition-colors"
             >
-              <span className="w-16 text-xs font-semibold text-slate-200">
+              <span className="w-16 text-xs font-semibold text-theme-text/90">
                 {getDayName(item.date, index)}
               </span>
 
               <div className="flex items-center space-x-2 w-32">
                 <WeatherIcon
                   name={item.condition.iconName}
-                  className="w-4 h-4 text-sky-400 shrink-0"
+                  className="w-4 h-4 text-theme-sky shrink-0"
                 />
-                <span className="text-xs text-slate-400 truncate">
+                <span className="text-xs text-theme-text/60 truncate">
                   {item.condition.label}
                 </span>
               </div>
 
               {/* Min / Max Temperature Bar */}
               <div className="flex items-center space-x-3 text-xs font-mono justify-end">
-                <span className="text-slate-400 w-8 text-right">{minTemp}</span>
-                <div className="w-14 h-1.5 bg-slate-700/60 rounded-sm overflow-hidden flex">
+                <span className="text-theme-text/60 w-8 text-right">{minTemp}</span>
+                <div className="w-14 h-1.5 bg-theme-surface/60 rounded-sm overflow-hidden flex">
                   <div
-                    className="h-full bg-gradient-to-r from-sky-400 to-amber-400 rounded-sm"
+                    className="h-full bg-theme-sky rounded-sm"
                     style={{ width: '100%' }}
                   />
                 </div>

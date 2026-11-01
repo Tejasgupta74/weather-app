@@ -22,7 +22,7 @@ export function Header({
       {/* Brand Title */}
       <div className="flex items-center space-x-3">
         <div className="px-3 py-1.5 glass-panel rounded-md">
-          <span className="text-xs uppercase tracking-wider text-slate-400 font-mono">
+          <span className="text-xs uppercase tracking-wider text-theme-text/60 font-mono">
             3D Atmosphere
           </span>
         </div>
@@ -36,7 +36,7 @@ export function Header({
         <button
           type="button"
           onClick={onResetGeolocation}
-          className="p-2 glass-panel rounded-md hover:bg-slate-800/80 text-slate-300 hover:text-white transition-colors focus:outline-none focus:ring-1 focus:ring-sky-400"
+          className="p-2 glass-panel rounded-md hover:bg-theme-surface/80 text-theme-text/75 hover:text-theme-text transition-colors focus:outline-none focus:ring-1 focus:ring-theme-sky"
           title="Detect Current Location"
           aria-label="Detect Current Location"
         >
@@ -47,7 +47,7 @@ export function Header({
         <button
           type="button"
           onClick={onToggleUnit}
-          className="px-3 py-2 glass-panel rounded-md hover:bg-slate-800/80 transition-colors text-xs font-mono font-medium focus:outline-none focus:ring-1 focus:ring-sky-400 text-slate-200"
+          className="px-3 py-2 glass-panel rounded-md hover:bg-theme-surface/80 transition-colors text-xs font-mono font-medium focus:outline-none focus:ring-1 focus:ring-theme-sky text-theme-text/90"
           aria-label={`Switch to ${unit === 'metric' ? 'Fahrenheit' : 'Celsius'}`}
         >
           {unit === 'metric' ? '°C' : '°F'}

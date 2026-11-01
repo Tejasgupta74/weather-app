@@ -51,15 +51,15 @@ export function MetricsGrid({ current, unit }: MetricsGridProps) {
             key={item.label}
             className="glass-panel p-3.5 rounded-lg flex flex-col justify-between"
           >
-            <div className="flex items-center justify-between text-slate-400 mb-2">
+            <div className="flex items-center justify-between text-theme-text/60 mb-2">
               <span className="text-xs uppercase tracking-wider font-mono">{item.label}</span>
               <Icon className={`w-4 h-4 ${item.color}`} />
             </div>
             <div>
-              <div className="text-lg md:text-xl font-bold font-mono text-slate-100">
+              <div className="text-lg md:text-xl font-bold font-mono text-theme-text">
                 {item.value}
               </div>
-              <div className="text-xs text-slate-400 mt-0.5 truncate">
+              <div className="text-xs text-theme-text/60 mt-0.5 truncate">
                 {item.subValue}
               </div>
             </div>

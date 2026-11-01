@@ -6,47 +6,48 @@ import { WeatherConditionCategory } from '../../types/weather';
 interface FogControllerProps {
   weatherCategory: WeatherConditionCategory;
   isDay: boolean;
+  themeColors?: {
+    sky: string;
+    surface: string;
+    text: string;
+  };
 }
 
 const scratchFogColor = new THREE.Color();
 const targetFogColor = new THREE.Color();
 
-export function FogController({ weatherCategory, isDay }: FogControllerProps) {
+export function FogController({
+  weatherCategory,
+  isDay,
+  themeColors,
+}: FogControllerProps) {
   const { scene } = useThree();
   const fogRef = useRef<THREE.FogExp2 | null>(null);
 
-  // Initialize scene fog once
   useEffect(() => {
     if (!scene.fog) {
-      const fog = new THREE.FogExp2('#0B0F17', 0.005);
+      const fog = new THREE.FogExp2(themeColors?.sky || '#0B0F17', 0.005);
       scene.fog = fog;
       fogRef.current = fog;
     } else {
       fogRef.current = scene.fog as THREE.FogExp2;
     }
-  }, [scene]);
+  }, [scene, themeColors]);
 
   useFrame((_, delta) => {
     if (!fogRef.current) return;
 
-    // Target density based on weather condition
-    let targetDensity = 0.003; // Clear baseline
+    let targetDensity = 0.003;
     if (weatherCategory === 'fog') {
-      targetDensity = 0.045; // Dense atmospheric fog
+      targetDensity = 0.045;
     } else if (weatherCategory === 'rain' || weatherCategory === 'snow') {
-      targetDensity = 0.018; // Atmospheric precipitation mist
+      targetDensity = 0.018;
     } else if (weatherCategory === 'cloudy') {
-      targetDensity = 0.008; // Mild overcast hazing
+      targetDensity = 0.008;
     }
 
-    // Target color
-    if (isDay) {
-      targetFogColor.set(weatherCategory === 'fog' ? '#94A3B8' : '#7DD3FC');
-    } else {
-      targetFogColor.set('#0B0F17');
-    }
+    targetFogColor.set(themeColors?.sky || (isDay ? '#7DD3FC' : '#0B0F17'));
 
-    // Smooth lerping
     const lerpRate = Math.min(1.0, delta * 2.0);
     fogRef.current.density = THREE.MathUtils.lerp(
       fogRef.current.density,

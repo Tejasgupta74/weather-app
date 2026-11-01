@@ -2,9 +2,12 @@ import { useCallback, useMemo } from 'react';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useWeather } from './hooks/useWeather';
 import { usePreferences } from './hooks/usePreferences';
+import { useWeatherTheme } from './hooks/useWeatherTheme';
+import { getPhase, getLocalTimeInTimezone, calculateSolarPosition } from './utils/solarPosition';
 import { CityLocation } from './types/geo';
-import { resolveWeatherTheme } from './utils/themeResolver';
+import { SceneWeatherState } from './types/scene';
 
+import { WeatherCanvas } from './components/scene/WeatherCanvas';
 import { TopBar } from './components/dashboard/TopBar';
 import { HeroBanner } from './components/dashboard/HeroBanner';
 import { HourlyStrip } from './components/dashboard/HourlyStrip';
@@ -38,41 +41,65 @@ export default function App() {
           });
         },
         () => {
-          // Keep current location if denied
+          // Keep current location if permission is denied
         }
       );
     }
   }, [setLocation]);
 
-  // Dynamically resolve theme according to live weather condition & solar cycle
-  const theme = useMemo(() => {
-    const category = weather?.current.condition.category || 'clear';
-    const isDay = weather?.current.isDay ?? true;
-    return resolveWeatherTheme(category, isDay);
-  }, [weather]);
+  // 1. Normalized weather condition category
+  const condition = weather?.current.condition.category || 'clear';
+
+  // 2. Solar phase computed from searched location time (not browser time)
+  const phase = useMemo(() => {
+    const localNow = getLocalTimeInTimezone(weather?.timezone);
+    return getPhase(
+      localNow,
+      weather?.current.sunrise,
+      weather?.current.sunset,
+      weather?.current.isDay ?? true
+    );
+  }, [weather?.timezone, weather?.current.sunrise, weather?.current.sunset, weather?.current.isDay]);
+
+  // 3. Dynamic weather theme hook (sets CSS variables on document.documentElement)
+  const theme = useWeatherTheme(condition, phase);
+
+  // 4. Solar arc calculation for 3D celestial tracking
+  const solar = useMemo(() => {
+    const localNow = getLocalTimeInTimezone(weather?.timezone);
+    return calculateSolarPosition(
+      localNow,
+      weather?.current.sunrise || '',
+      weather?.current.sunset || ''
+    );
+  }, [weather?.timezone, weather?.current.sunrise, weather?.current.sunset]);
+
+  // 5. 3D Scene state
+  const sceneState: SceneWeatherState = useMemo(
+    () => ({
+      temperature: weather?.current.temperature ?? 18,
+      precipitation: weather?.current.precipitation ?? 0,
+      windSpeed: weather?.current.windSpeed ?? 5,
+      windDirection: weather?.current.windDirection ?? 180,
+      cloudCover: weather?.current.cloudCover ?? 20,
+      isDay: weather?.current.isDay ?? (phase === 'day' || phase === 'dawn'),
+      sunAngle: solar.sunAngle,
+      ambientFactor: solar.ambientFactor,
+      weatherCategory: condition,
+      latitude: weather?.latitude ?? location?.latitude ?? 51.5074,
+      longitude: weather?.longitude ?? location?.longitude ?? -0.1278,
+    }),
+    [weather, phase, solar, condition, location]
+  );
 
   return (
-    <div
-      className="min-h-screen w-full text-slate-100 relative flex flex-col p-4 md:p-6 lg:p-8 font-sans overflow-x-hidden transition-colors duration-700"
-      style={{ backgroundColor: theme.bgBase }}
-    >
-      {/* Ambient Lighting Depth Adapting to Weather Theme */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden transition-all duration-700">
-        {/* Primary Ambient Glow (Right side) */}
-        <div
-          className="absolute right-[-5%] top-[10%] w-[750px] h-[750px] rounded-full blur-[140px] transition-colors duration-700"
-          style={{ backgroundColor: theme.glowRight }}
-        />
-        {/* Secondary Ambient Glow (Left side) */}
-        <div
-          className="absolute left-[-6%] bottom-[5%] w-[650px] h-[650px] rounded-full blur-[140px] transition-colors duration-700"
-          style={{ backgroundColor: theme.glowLeft }}
-        />
-        {/* Horizon Shadow at Base */}
-        <div
-          className={`absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t ${theme.horizonGradient} opacity-90 transition-all duration-700`}
-        />
-      </div>
+    <div className="min-h-screen w-full text-theme-text relative flex flex-col p-4 md:p-6 lg:p-8 font-sans overflow-x-hidden transition-colors duration-1000 bg-theme-surface">
+      {/* 3D WebGL Scene in Background */}
+      <WeatherCanvas
+        weatherState={sceneState}
+        themeColors={theme}
+        phase={phase}
+      />
 
       {/* Transparent Frosted Glass Dashboard Canvas */}
       <div className="relative z-10 w-full glass-chassis rounded-[28px] md:rounded-[36px] p-5 md:p-8 flex flex-col flex-1">
@@ -103,7 +130,6 @@ export default function App() {
                 current={weather.current}
                 todayDaily={weather.daily[0]}
                 unit={unit}
-                backdropUrl={theme.heroBackdrop}
               />
               <HourlyStrip hourly={weather.hourly} unit={unit} />
               <DailyForecastGrid daily={weather.daily} unit={unit} />
@@ -114,7 +140,7 @@ export default function App() {
               <LiveConditionsCard
                 current={weather.current}
                 unit={unit}
-                accentStroke={theme.accentStroke}
+                accentStroke={theme.sky}
               />
               <RecentlySearchedCard
                 recentLocations={recentLocations}
@@ -132,10 +158,14 @@ export default function App() {
         )}
 
         {/* Footer Legal Links */}
-        <footer className="flex items-center justify-between text-[11px] text-slate-500 font-mono pt-8 mt-auto border-t border-white/5">
+        <footer className="flex items-center justify-between text-[11px] text-theme-text/60 font-mono pt-8 mt-auto border-t border-theme-text/10">
           <div className="flex items-center space-x-3">
-            <a href="/privacy.html" className="hover:text-slate-300 transition-colors">Privacy</a>
-            <a href="/terms.html" className="hover:text-slate-300 transition-colors">Terms</a>
+            <a href="/privacy.html" className="hover:text-theme-text transition-colors">
+              Privacy
+            </a>
+            <a href="/terms.html" className="hover:text-theme-text transition-colors">
+              Terms
+            </a>
           </div>
           <span>Powered by Open-Meteo</span>
         </footer>

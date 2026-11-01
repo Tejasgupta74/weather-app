@@ -55,12 +55,12 @@ export function TopBar({
     <header className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 gap-4">
       {/* Location & Date Header */}
       <div className="flex items-center space-x-2.5">
-        <MapPin className="w-5 h-5 text-white shrink-0" />
+        <MapPin className="w-5 h-5 text-theme-sky shrink-0" />
         <div>
-          <h1 className="text-base md:text-lg font-bold tracking-tight text-white leading-tight">
+          <h1 className="text-base md:text-lg font-bold tracking-tight text-theme-text leading-tight">
             {locationName}
           </h1>
-          <p className="text-xs text-slate-400 font-medium">
+          <p className="text-xs text-theme-text/60 font-medium">
             {todayFormatted}
           </p>
         </div>

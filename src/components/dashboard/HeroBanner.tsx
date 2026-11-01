@@ -29,25 +29,25 @@ export function HeroBanner({ current, todayDaily, unit, backdropUrl }: HeroBanne
       <div className="relative z-10 w-full flex flex-col md:flex-row md:items-center justify-between gap-6">
         {/* Left: Metrics & Condition */}
         <div className="space-y-3">
-          <div className="text-6xl md:text-7xl font-light tracking-tight text-white leading-none font-mono">
+          <div className="text-6xl md:text-7xl font-light tracking-tight text-theme-text leading-none font-mono">
             {currentTemp}
           </div>
 
           <div>
-            <h2 className="text-xl md:text-2xl font-bold tracking-tight text-white">
+            <h2 className="text-xl md:text-2xl font-bold tracking-tight text-theme-text">
               {current.condition.label}
             </h2>
-            <p className="text-xs text-slate-300 font-medium mt-0.5">
+            <p className="text-xs text-theme-text/75 font-medium mt-0.5">
               Humidity {current.humidity}%, Wind {current.windSpeed} km/h
             </p>
           </div>
 
           {todayDaily && (
             <div className="flex items-center space-x-2 pt-1">
-              <span className="px-2.5 py-1 bg-white/10 backdrop-blur-md rounded-md text-[11px] font-mono text-slate-200 border border-white/10">
+              <span className="px-2.5 py-1 bg-theme-text/10 backdrop-blur-md rounded-md text-[11px] font-mono text-theme-text/90 border border-theme-text/10">
                 H: {maxTemp}
               </span>
-              <span className="px-2.5 py-1 bg-white/10 backdrop-blur-md rounded-md text-[11px] font-mono text-slate-300 border border-white/10">
+              <span className="px-2.5 py-1 bg-theme-text/10 backdrop-blur-md rounded-md text-[11px] font-mono text-theme-text/75 border border-theme-text/10">
                 L: {minTemp}
               </span>
             </div>
@@ -55,7 +55,7 @@ export function HeroBanner({ current, todayDaily, unit, backdropUrl }: HeroBanne
         </div>
 
         {/* Right: Technical Subtext */}
-        <div className="max-w-xs text-xs text-slate-300/90 leading-relaxed md:text-right font-normal">
+        <div className="max-w-xs text-xs text-theme-text/80 leading-relaxed md:text-right font-normal">
           With real time data and advanced technology, we provide reliable forecasts for any location around the world.
         </div>
       </div>

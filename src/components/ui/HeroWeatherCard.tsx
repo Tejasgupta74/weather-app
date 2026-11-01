@@ -25,14 +25,14 @@ export function HeroWeatherCard({
       {/* Location & Condition Badge */}
       <div className="flex items-start justify-between">
         <div>
-          <span className="text-xs uppercase tracking-wider text-slate-400 font-mono">
+          <span className="text-xs uppercase tracking-wider text-theme-text/60 font-mono">
             Current Weather
           </span>
-          <h2 className="text-xl md:text-2xl font-bold tracking-tight text-slate-50 mt-0.5">
+          <h2 className="text-xl md:text-2xl font-bold tracking-tight text-theme-text mt-0.5">
             {locationName}
           </h2>
         </div>
-        <div className="p-2.5 bg-slate-800/60 rounded-lg text-sky-400 border border-slate-700/50">
+        <div className="p-2.5 bg-theme-surface/60 rounded-lg text-theme-sky border border-theme-text/10">
           <WeatherIcon name={current.condition.iconName} className="w-6 h-6" />
         </div>
       </div>
@@ -40,11 +40,11 @@ export function HeroWeatherCard({
       {/* Main Temperature & Condition Label */}
       <div className="space-y-1">
         <div className="flex items-baseline space-x-2">
-          <span className="text-5xl md:text-6xl font-extrabold font-mono tracking-tight text-white">
+          <span className="text-5xl md:text-6xl font-extrabold font-mono tracking-tight text-theme-text">
             {currentTemp}
           </span>
         </div>
-        <div className="text-sm font-medium text-slate-200">
+        <div className="text-sm font-medium text-theme-text/80">
           {current.condition.label}
         </div>
       </div>
