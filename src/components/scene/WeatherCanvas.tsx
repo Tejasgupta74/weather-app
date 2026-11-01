@@ -61,9 +61,10 @@ export function WeatherCanvas({
   return (
     <div className="fixed inset-0 pointer-events-auto z-0 overflow-hidden w-full h-full">
       <Canvas
-        shadows
+        dpr={[1, 1.5]}
+        performance={{ min: 0.5 }}
         camera={{ position: [0, 3.2, 10.5], fov: 45 }}
-        gl={{ antialias: true, alpha: false }}
+        gl={{ antialias: false, powerPreference: 'high-performance', stencil: false }}
         onCreated={({ scene }) => {
           scene.background = new THREE.Color(
             themeColors?.sky || (weatherState.isDay ? '#38BDF8' : '#0B0F17')
