@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms and Conditions - Weather Forecast</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background-color: #2B251F;
+        color: #F8FAFC;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 16px;
+        position: relative;
+        overflow-x: hidden;
+      }
+      /* Ambient Lighting Layer */
+      .ambient-glow-right {
+        position: fixed;
+        right: -5%;
+        top: 10%;
+        width: 750px;
+        height: 750px;
+        background: rgba(229, 143, 73, 0.25);
+        border-radius: 50%;
+        filter: blur(140px);
+        pointer-events: none;
+      }
+      .ambient-glow-left {
+        position: fixed;
+        left: -6%;
+        bottom: 5%;
+        width: 650px;
+        height: 650px;
+        background: rgba(46, 59, 50, 0.35);
+        border-radius: 50%;
+        filter: blur(140px);
+        pointer-events: none;
+      }
+      .ambient-desk {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 256px;
+        background: linear-gradient(to top, #181410, rgba(34, 27, 20, 0.7), transparent);
+        opacity: 0.9;
+        pointer-events: none;
+      }
+      /* Glass Chassis */
+      .glass-chassis {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        max-width: 800px;
+        background: rgba(18, 20, 26, 0.65);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 32px;
+        box-shadow: 0 32px 90px rgba(0, 0, 0, 0.85);
+        padding: 40px;
+      }
+      @media (max-width: 640px) {
+        .glass-chassis { padding: 24px; border-radius: 24px; }
+      }
+      .header-area {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 24px;
+      }
+      h1 {
+        font-size: 26px;
+        font-weight: 700;
+        color: #FFFFFF;
+        letter-spacing: -0.02em;
+      }
+      .date-badge {
+        font-size: 12px;
+        color: #94A3B8;
+        margin-top: 4px;
+      }
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.07);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.10);
+        border-radius: 12px;
+        color: #F8FAFC;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.20);
+      }
+      /* Content Sections */
+      .section-card {
+        background: rgba(28, 32, 42, 0.45);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      h2 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #FFFFFF;
+        margin-bottom: 8px;
+        letter-spacing: -0.01em;
+      }
+      p {
+        font-size: 13px;
+        color: #CBD5E1;
+        line-height: 1.6;
+      }
+      a {
+        color: #38BDF8;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .footer-note {
+        font-size: 11px;
+        color: #64748B;
+        font-family: monospace;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Ambient Depth Background -->
+    <div class="ambient-glow-right"></div>
+    <div class="ambient-glow-left"></div>
+    <div class="ambient-desk"></div>
+
+    <!-- Frosted Glass Chassis Container -->
+    <main class="glass-chassis">
+      <div class="header-area">
+        <div>
+          <h1>Terms and Conditions</h1>
+          <div class="date-badge">Last Revised: November 1, 2026</div>
+        </div>
+        <a href="/" class="back-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          Dashboard
+        </a>
+      </div>
+
+      <div class="section-card">
+        <h2>1. Informational Purpose</h2>
+        <p>This weather forecast application provides atmospheric metrics and predictive timelines solely for general personal and informational purposes. The estimates presented should not be used as the single point of truth for safety-critical marine voyages, civil aviation navigation, or emergency severe weather evacuation plans.</p>
+      </div>
+
+      <div class="section-card">
+        <h2>2. Data Accuracy and Availability</h2>
+        <p>Meteorological predictions and geocoding services rely on Open-Meteo external infrastructure. All weather metrics and services are provided on an "as is" and "as available" basis without warranties of uninterrupted uptime or absolute atmospheric precision.</p>
+      </div>
+
+      <div class="section-card">
+        <h2>3. Fair Usage Policy</h2>
+        <p>Users may freely search locations, view forecasts, and toggle unit settings. Automated scraping, network flooding, or abusive query rates directed at the underlying weather APIs are strictly prohibited.</p>
+      </div>
+
+      <div class="section-card">
+        <h2>4. Intellectual Property</h2>
+        <p>The application source code, interface designs, and responsive layouts are licensed under the MIT Open Source License. You are free to inspect, modify, and build upon the source code in accordance with the repository license terms.</p>
+      </div>
+
+      <div class="footer-note">
+        <span>Weather Forecast System</span>
+        <span>Powered by Open-Meteo</span>
+      </div>
+    </main>
+  </body>
+</html>
