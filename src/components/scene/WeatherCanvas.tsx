@@ -2,6 +2,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { SkyEnvironment } from './SkyEnvironment';
+import { LowPolyLandscape } from './LowPolyLandscape';
 import { RainParticles } from './RainParticles';
 import { SnowParticles } from './SnowParticles';
 import { CloudLayers } from './CloudLayers';
@@ -98,6 +99,13 @@ export function WeatherCanvas({
           themeColors={themeColors}
         />
 
+        {/* Low-Poly Ground Terrain Landscape */}
+        <LowPolyLandscape
+          isSnowing={isSnowing}
+          isDay={weatherState.isDay}
+          isRaining={isRaining}
+        />
+
         {/* Cloud Layers driven by cloudCover & wind */}
         <CloudLayers
           cloudCover={weatherState.cloudCover}
@@ -112,6 +120,7 @@ export function WeatherCanvas({
           windSpeed={weatherState.windSpeed}
           windDirection={weatherState.windDirection}
           isActive={isRaining}
+          weatherCategory={weatherState.weatherCategory}
         />
 
         {/* Instanced Snow Particles */}

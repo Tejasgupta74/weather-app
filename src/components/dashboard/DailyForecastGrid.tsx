@@ -11,9 +11,12 @@ export function DailyForecastGrid({ daily, unit }: DailyForecastGridProps) {
   const displayDays = daily.slice(0, 7);
 
   const getDayLabel = (dateStr: string, index: number) => {
+    if (index === 0) return 'Today';
     try {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('en-US', { weekday: 'short' });
+      return new Date(`${dateStr}T00:00:00Z`).toLocaleDateString('en-US', {
+        weekday: 'short',
+        timeZone: 'UTC',
+      });
     } catch {
       const fallback = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
       return fallback[index % 7];
@@ -26,7 +29,8 @@ export function DailyForecastGrid({ daily, unit }: DailyForecastGridProps) {
         {displayDays.map((item, index) => {
           const maxTemp = formatTemperature(item.temperatureMax, unit);
           const minTemp = formatTemperature(item.temperatureMin, unit);
-          const hasRain = item.precipitation > 0;
+          const precipProb = item.precipitationProbability ?? 0;
+          const showPrecip = precipProb > 0 || item.precipitation > 0;
 
           return (
             <div
@@ -34,31 +38,31 @@ export function DailyForecastGrid({ daily, unit }: DailyForecastGridProps) {
               className="flex-1 flex flex-col items-center justify-between py-1 text-center space-y-2.5"
             >
               {/* Weekday Label */}
-              <span className="text-xs font-semibold text-slate-300">
+              <span className="text-xs font-semibold text-theme-text/85">
                 {getDayLabel(item.date, index)}
               </span>
 
               {/* Weather Icon with Rain Probability */}
               <div className="flex flex-col items-center my-1">
-                <div className="text-amber-400">
+                <div className="text-theme-sky">
                   <WeatherIcon
                     name={item.condition.iconName}
                     className="w-5 h-5"
                   />
                 </div>
-                {hasRain && (
-                  <span className="text-[10px] font-mono text-sky-400 font-medium mt-0.5">
-                    {Math.round(Math.min(100, item.precipitation * 20))}%
+                {showPrecip && (
+                  <span className="text-[10px] font-mono text-theme-sky font-medium mt-0.5">
+                    {precipProb}%
                   </span>
                 )}
               </div>
 
               {/* High & Low Temperature Stack */}
               <div className="flex flex-col items-center font-mono leading-tight">
-                <span className="text-sm font-bold text-white">
+                <span className="text-sm font-bold text-theme-text">
                   {maxTemp}
                 </span>
-                <span className="text-xs text-slate-500 font-medium mt-0.5">
+                <span className="text-xs text-theme-text/75 font-medium mt-0.5">
                   {minTemp}
                 </span>
               </div>

@@ -40,6 +40,21 @@ describe('Theme Contrast & WCAG AA Compliance', () => {
     expect(combinationCount).toBe(28);
   });
 
+  it('guarantees WCAG AA (>= 4.5:1) for secondary text (75% opacity) across all 28 combinations', () => {
+    for (const phase of phases) {
+      for (const condition of conditions) {
+        const theme = resolveTheme(condition, phase);
+        const secondaryText = lerpColor(theme.surface, theme.text, 0.75);
+        const ratio = getContrastRatio(secondaryText, theme.surface);
+
+        expect(
+          ratio,
+          `Failed WCAG AA (4.5:1) secondary text contrast for phase="${phase}" and condition="${condition}": ratio=${ratio.toFixed(2)}:1`
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+
   it('lerps colors accurately', () => {
     const white = '#FFFFFF';
     const black = '#000000';

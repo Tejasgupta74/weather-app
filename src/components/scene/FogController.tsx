@@ -39,11 +39,15 @@ export function FogController({
 
     let targetDensity = 0.003;
     if (weatherCategory === 'fog') {
+      targetDensity = 0.11;
+    } else if (weatherCategory === 'thunderstorm') {
       targetDensity = 0.045;
     } else if (weatherCategory === 'rain' || weatherCategory === 'snow') {
-      targetDensity = 0.018;
+      targetDensity = 0.03;
+    } else if (weatherCategory === 'drizzle') {
+      targetDensity = 0.022;
     } else if (weatherCategory === 'cloudy') {
-      targetDensity = 0.008;
+      targetDensity = 0.012;
     }
 
     targetFogColor.set(themeColors?.sky || (isDay ? '#7DD3FC' : '#0B0F17'));

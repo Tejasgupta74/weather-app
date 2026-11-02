@@ -1,5 +1,5 @@
 import { CurrentWeather, DailyForecastItem } from '../../types/weather';
-import { UnitSystem, formatTemperature } from '../../utils/unitConversion';
+import { UnitSystem, formatTemperature, formatWindSpeed } from '../../utils/unitConversion';
 
 interface HeroBannerProps {
   current: CurrentWeather;
@@ -28,7 +28,7 @@ export function HeroBanner({ current, todayDaily, unit, localTime }: HeroBannerP
               {current.condition.label}
             </h2>
             <p className="text-xs text-theme-text/75 font-medium mt-0.5">
-              Humidity {current.humidity}%, Wind {current.windSpeed} km/h
+              Humidity {current.humidity}%, Wind {formatWindSpeed(current.windSpeed, unit)}
             </p>
           </div>
 

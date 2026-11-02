@@ -25,22 +25,22 @@ export interface ThemeColors {
 export const PHASE_PALETTES: Record<Phase, PaletteColors> = {
   dawn: {
     sky: '#526071',
-    surface: '#1A2230',
+    surface: '#1E2633',
     text: '#F8FAFC',
   },
   day: {
     sky: '#38BDF8',
-    surface: '#1A2230',
+    surface: '#18283E',
     text: '#F8FAFC',
   },
   dusk: {
     sky: '#3E4C5E',
-    surface: '#1A2230',
+    surface: '#262730',
     text: '#F8FAFC',
   },
   night: {
     sky: '#0F172A',
-    surface: '#131B27',
+    surface: '#0E141E',
     text: '#F8FAFC',
   },
 };

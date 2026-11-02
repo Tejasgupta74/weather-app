@@ -49,7 +49,7 @@ export function LightningEffect({ isActive }: LightningEffectProps) {
         pulse = Math.max(0, 1.0 - (progress - 0.75) * 4); // Fast decay
       }
 
-      lightRef.current.intensity = pulse * 7.5;
+      lightRef.current.intensity = pulse * 450;
     } else {
       lightRef.current.intensity = 0;
     }

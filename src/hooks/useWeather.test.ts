@@ -53,7 +53,7 @@ describe('normalizeWeatherData', () => {
     const mock = createMockResponse();
     const result = normalizeWeatherData(mock, 'Dubai');
 
-    expect(result.current.temperature).toBe(37);
+    expect(result.current.temperature).toBe(37.2);
     expect(result.current.isDay).toBe(true);
     // Now (index 0) must exactly equal current conditions
     expect(result.hourly[0].temperature).toBe(result.current.temperature);
@@ -82,11 +82,11 @@ describe('normalizeWeatherData', () => {
 
     const result = normalizeWeatherData(mock, 'Vancouver');
 
-    expect(result.current.temperature).toBe(4);
+    expect(result.current.temperature).toBe(4.1);
     expect(result.current.isDay).toBe(false);
     expect(result.current.condition.iconName).toBe('Moon');
     // Hourly Now item must match
-    expect(result.hourly[0].temperature).toBe(4);
+    expect(result.hourly[0].temperature).toBe(4.1);
     expect(result.hourly[0].isDay).toBe(false);
     expect(result.hourly[0].condition.iconName).toBe('Moon');
   });

@@ -4,6 +4,7 @@ import { useWeather } from './hooks/useWeather';
 import { usePreferences } from './hooks/usePreferences';
 import { useWeatherTheme } from './hooks/useWeatherTheme';
 import { getPhase, calculateSolarPosition, getLocationLocalTime } from './utils/solarPosition';
+import { reverseGeocode } from './utils/reverseGeocode';
 import { CityLocation } from './types/geo';
 import { SceneWeatherState } from './types/scene';
 
@@ -24,30 +25,26 @@ export default function App() {
   const handleSelectCity = useCallback(
     (city: CityLocation) => {
       setLocation(city);
-      addRecentLocation(city);
+      if (city.country !== 'GPS') {
+        addRecentLocation(city);
+      }
     },
     [setLocation, addRecentLocation]
   );
 
-  useEffect(() => {
-    if (weather && location && location.name) {
-      addRecentLocation({
-        ...location,
-        temperature: weather.current.temperature,
-        conditionLabel: weather.current.condition.label,
-      });
-    }
-  }, [weather, location, addRecentLocation]);
-
   const handleResetGeolocation = useCallback(() => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
+        async (pos) => {
+          const lat = Number(pos.coords.latitude.toFixed(4));
+          const lon = Number(pos.coords.longitude.toFixed(4));
+          const geo = await reverseGeocode(lat, lon);
           setLocation({
-            name: 'Current Location',
-            country: 'GPS',
-            latitude: Number(pos.coords.latitude.toFixed(4)),
-            longitude: Number(pos.coords.longitude.toFixed(4)),
+            name: geo.name,
+            country: geo.country,
+            countryCode: geo.countryCode,
+            latitude: lat,
+            longitude: lon,
           });
         },
         () => {
@@ -60,11 +57,11 @@ export default function App() {
   // 1. Normalized weather condition category
   const condition = weather?.current.condition.category || 'clear';
 
-  // Live real-time clock tick for location time
+  // Live real-time clock tick for location time (ticks every 30 seconds)
   const [currentUtcMs, setCurrentUtcMs] = useState(() => Date.now());
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentUtcMs(Date.now()), 1000);
+    const timer = setInterval(() => setCurrentUtcMs(Date.now()), 30000);
     return () => clearInterval(timer);
   }, []);
 
@@ -72,6 +69,16 @@ export default function App() {
   const locationTime = useMemo(() => {
     return getLocationLocalTime(weather?.utcOffsetSeconds ?? 0, currentUtcMs);
   }, [weather?.utcOffsetSeconds, currentUtcMs]);
+
+  // Refetch when location local date rolls past midnight
+  useEffect(() => {
+    if (weather && weather.daily[0]) {
+      const localDateStr = locationTime.isoHour.slice(0, 10);
+      if (localDateStr !== weather.daily[0].date) {
+        refetch();
+      }
+    }
+  }, [locationTime.isoHour, weather, refetch]);
 
   // 3. Solar phase computed from searched location time (not browser time)
   const phase = useMemo(() => {
@@ -114,7 +121,7 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen w-full text-theme-text relative flex flex-col p-4 md:p-6 lg:p-8 font-sans overflow-x-hidden transition-colors duration-1000 bg-theme-surface">
+    <div className="min-h-screen w-full text-theme-text relative flex flex-col p-4 md:p-6 lg:p-8 font-sans overflow-x-hidden transition-colors duration-1000 bg-transparent">
       {/* 3D WebGL Scene in Background */}
       <WeatherCanvas
         weatherState={sceneState}

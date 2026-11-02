@@ -24,7 +24,8 @@ export function HourlyStrip({ hourly, unit }: HourlyStripProps) {
       <div className="flex items-center justify-between min-w-[540px] space-x-2">
         {displayItems.map((item, index) => {
           const temp = formatTemperature(item.temperature, unit);
-          const hasPrecip = item.precipitation > 0;
+          const precipProb = item.precipitationProbability ?? 0;
+          const showPrecip = precipProb > 0 || item.precipitation > 0;
 
           return (
             <div
@@ -32,25 +33,25 @@ export function HourlyStrip({ hourly, unit }: HourlyStripProps) {
               className="flex-1 flex flex-col items-center justify-between py-1 text-center space-y-2"
             >
               {/* Hour Label */}
-              <span className="text-xs font-medium text-slate-400">
+              <span className="text-xs font-medium text-theme-text/75">
                 {formatHour(item.time, index)}
               </span>
 
-              {/* Weather Icon with Optional Precipitation % */}
+              {/* Weather Icon with Optional Precipitation Probability */}
               <div className="flex flex-col items-center my-1">
                 <WeatherIcon
                   name={item.condition.iconName}
-                  className="w-5 h-5 text-slate-300"
+                  className="w-5 h-5 text-theme-text/85"
                 />
-                {hasPrecip && (
-                  <span className="text-[10px] font-mono text-sky-400 font-medium mt-0.5">
-                    {Math.round(Math.min(100, item.precipitation * 30))}%
+                {showPrecip && (
+                  <span className="text-[10px] font-mono text-theme-sky font-medium mt-0.5">
+                    {precipProb}%
                   </span>
                 )}
               </div>
 
               {/* Temperature */}
-              <span className="text-sm font-bold font-mono text-white">
+              <span className="text-sm font-bold font-mono text-theme-text">
                 {temp}
               </span>
             </div>

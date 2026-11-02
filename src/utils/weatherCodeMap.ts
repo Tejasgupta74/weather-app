@@ -42,25 +42,46 @@ export function weatherCodeMap(code: number, isDay: boolean = true): WeatherCond
   }
 
   if (code >= 51 && code <= 57) {
+    let label = 'Light Drizzle';
+    if (code === 53) label = 'Moderate Drizzle';
+    else if (code === 55) label = 'Dense Drizzle';
+    else if (code === 56) label = 'Light Freezing Drizzle';
+    else if (code === 57) label = 'Dense Freezing Drizzle';
     return {
       category: 'drizzle',
-      label: code <= 53 ? 'Light Drizzle' : 'Dense Drizzle',
+      label,
       iconName: 'CloudDrizzle',
     };
   }
 
   if ((code >= 61 && code <= 67) || (code >= 80 && code <= 82)) {
+    let label = 'Moderate Rain';
+    if (code === 61) label = 'Slight Rain';
+    else if (code === 63) label = 'Moderate Rain';
+    else if (code === 65) label = 'Heavy Rain';
+    else if (code === 66) label = 'Light Freezing Rain';
+    else if (code === 67) label = 'Heavy Freezing Rain';
+    else if (code === 80) label = 'Slight Rain Showers';
+    else if (code === 81) label = 'Moderate Rain Showers';
+    else if (code === 82) label = 'Violent Rain Showers';
     return {
       category: 'rain',
-      label: code >= 65 || code === 82 ? 'Heavy Rain' : 'Moderate Rain',
+      label,
       iconName: 'CloudRain',
     };
   }
 
   if ((code >= 71 && code <= 77) || code === 85 || code === 86) {
+    let label = 'Snowfall';
+    if (code === 71) label = 'Slight Snow';
+    else if (code === 73) label = 'Moderate Snow';
+    else if (code === 75) label = 'Heavy Snow';
+    else if (code === 77) label = 'Snow Grains';
+    else if (code === 85) label = 'Slight Snow Showers';
+    else if (code === 86) label = 'Heavy Snow Showers';
     return {
       category: 'snow',
-      label: code >= 75 || code === 86 ? 'Heavy Snow' : 'Snowfall',
+      label,
       iconName: 'CloudSnow',
     };
   }
@@ -75,7 +96,7 @@ export function weatherCodeMap(code: number, isDay: boolean = true): WeatherCond
 
   return {
     category: 'clear',
-    label: 'Clear',
+    label: 'Unknown',
     iconName: isDay ? 'Sun' : 'Moon',
   };
 }

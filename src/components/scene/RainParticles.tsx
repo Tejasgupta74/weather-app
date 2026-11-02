@@ -1,12 +1,14 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { WeatherConditionCategory } from '../../types/weather';
 
 interface RainParticlesProps {
   precipitation: number; // mm
   windSpeed: number; // km/h
   windDirection: number; // degrees
   isActive: boolean;
+  weatherCategory?: WeatherConditionCategory;
 }
 
 const MAX_RAIN_COUNT = 1500;
@@ -21,15 +23,23 @@ export function RainParticles({
   windSpeed,
   windDirection,
   isActive,
+  weatherCategory,
 }: RainParticlesProps) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
 
-  // Active count scales from 250 (drizzle) to 1500 (heavy downpour)
+  // Active count scales based on weather category and precipitation mm
   const activeCount = useMemo(() => {
-    if (!isActive || precipitation <= 0) return 0;
-    const count = Math.round(Math.min(MAX_RAIN_COUNT, Math.max(300, precipitation * 200)));
+    if (!isActive) return 0;
+    let baseCount = 400;
+    if (weatherCategory === 'thunderstorm') baseCount = 1200;
+    else if (weatherCategory === 'rain') baseCount = 750;
+    else if (weatherCategory === 'drizzle') baseCount = 350;
+
+    const count = Math.round(
+      Math.min(MAX_RAIN_COUNT, Math.max(baseCount, (precipitation || 0.5) * 200))
+    );
     return count;
-  }, [isActive, precipitation]);
+  }, [isActive, precipitation, weatherCategory]);
 
   // Pre-allocate drop particle buffers
   const [positions, speeds] = useMemo(() => {

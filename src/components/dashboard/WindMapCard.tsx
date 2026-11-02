@@ -17,20 +17,6 @@ export function WindMapCard({
   const speedStr = formatWindSpeed(windSpeed, unit);
   const cardinal = getWindDirectionCardinal(windDirection);
 
-  const getFullCardinal = (dir: string) => {
-    const map: Record<string, string> = {
-      N: 'North',
-      NE: 'Northeast',
-      E: 'East',
-      SE: 'Southeast',
-      S: 'South',
-      SW: 'Southwest',
-      W: 'West',
-      NW: 'Northwest',
-    };
-    return map[dir] || dir;
-  };
-
   return (
     <div className="glass-card rounded-2xl p-5 select-none flex items-center justify-between">
       {/* Left: Wind Metrics */}
@@ -39,8 +25,8 @@ export function WindMapCard({
         <div className="text-lg md:text-xl font-bold font-mono text-theme-text">
           {speedStr}
         </div>
-        <p className="text-xs text-theme-text/70 font-medium">
-          {getFullCardinal(cardinal)} ({windDirection}°)
+        <p className="text-xs text-theme-text/75 font-medium">
+          Wind from {cardinal} ({windDirection}°)
         </p>
       </div>
 
@@ -48,12 +34,12 @@ export function WindMapCard({
       <div className="flex items-center space-x-2.5">
         <div
           className="w-11 h-11 rounded-lg border border-theme-text/10 bg-theme-text/5 flex items-center justify-center text-theme-sky"
-          title={`Wind direction: ${windDirection} degrees`}
-          aria-label={`Wind direction: ${windDirection} degrees`}
+          title={`Wind from ${cardinal} (${windDirection}°)`}
+          aria-label={`Wind from ${cardinal} (${windDirection}°)`}
         >
           <Navigation
             className="w-5 h-5 transition-transform duration-500"
-            style={{ transform: `rotate(${windDirection}deg)` }}
+            style={{ transform: `rotate(${(windDirection + 135) % 360}deg)` }}
           />
         </div>
 

@@ -33,6 +33,7 @@ export interface HourlyForecastItem {
   time: string;
   temperature: number;
   precipitation: number;
+  precipitationProbability?: number;
   weatherCode: number;
   condition: WeatherConditionInfo;
   isDay: boolean;
@@ -43,6 +44,7 @@ export interface DailyForecastItem {
   temperatureMax: number;
   temperatureMin: number;
   precipitation: number;
+  precipitationProbability?: number;
   weatherCode: number;
   condition: WeatherConditionInfo;
   sunrise: string;
@@ -84,6 +86,7 @@ export interface OpenMeteoRawResponse {
     time: string[];
     temperature_2m: number[];
     precipitation: number[];
+    precipitation_probability?: number[];
     weather_code: number[];
     is_day: number[];
   };
@@ -92,6 +95,7 @@ export interface OpenMeteoRawResponse {
     temperature_2m_max: number[];
     temperature_2m_min: number[];
     precipitation_sum: number[];
+    precipitation_probability_max?: number[];
     weather_code: number[];
     sunrise: string[];
     sunset: string[];

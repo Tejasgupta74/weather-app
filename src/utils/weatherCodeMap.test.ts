@@ -49,8 +49,20 @@ describe('weatherCodeMap', () => {
     expect(res.iconName).toBe('CloudLightning');
   });
 
-  it('falls back to clear for unknown codes', () => {
+  it('maps code 61 to slight rain', () => {
+    const res = weatherCodeMap(61, true);
+    expect(res.category).toBe('rain');
+    expect(res.label).toBe('Slight Rain');
+  });
+
+  it('maps code 66 to light freezing rain and 77 to snow grains', () => {
+    expect(weatherCodeMap(66, true).label).toBe('Light Freezing Rain');
+    expect(weatherCodeMap(77, true).label).toBe('Snow Grains');
+  });
+
+  it('falls back to clear category and Unknown label for unmapped codes', () => {
     const res = weatherCodeMap(999, true);
     expect(res.category).toBe('clear');
+    expect(res.label).toBe('Unknown');
   });
 });

@@ -26,13 +26,16 @@ export function normalizeWeatherData(raw: OpenMeteoRawResponse, locationName: st
     const isNow = sliceIdx === 0;
     const isDay = isNow ? isDayCurrent : Boolean(raw.hourly.is_day[idx]);
     const code = isNow ? raw.current.weather_code : (raw.hourly.weather_code[idx] ?? 0);
-    const temp = isNow ? Math.round(raw.current.temperature_2m) : Math.round(raw.hourly.temperature_2m[idx] ?? 0);
+    // Keep raw unrounded temperature to avoid double-rounding errors
+    const temp = isNow ? raw.current.temperature_2m : (raw.hourly.temperature_2m[idx] ?? 0);
     const precip = isNow ? raw.current.precipitation : (raw.hourly.precipitation[idx] ?? 0);
+    const precipProb = raw.hourly.precipitation_probability?.[idx] ?? 0;
 
     return {
       time: raw.hourly.time[idx],
       temperature: temp,
       precipitation: precip,
+      precipitationProbability: precipProb,
       weatherCode: code,
       condition: isNow ? currentCondition : weatherCodeMap(code, isDay),
       isDay,
@@ -44,9 +47,11 @@ export function normalizeWeatherData(raw: OpenMeteoRawResponse, locationName: st
     const code = raw.daily.weather_code[idx] ?? 0;
     return {
       date,
-      temperatureMax: Math.round(raw.daily.temperature_2m_max[idx] ?? 0),
-      temperatureMin: Math.round(raw.daily.temperature_2m_min[idx] ?? 0),
+      // Keep raw values to let display formatting handle single rounding
+      temperatureMax: raw.daily.temperature_2m_max[idx] ?? 0,
+      temperatureMin: raw.daily.temperature_2m_min[idx] ?? 0,
       precipitation: raw.daily.precipitation_sum[idx] ?? 0,
+      precipitationProbability: raw.daily.precipitation_probability_max?.[idx] ?? 0,
       weatherCode: code,
       condition: weatherCodeMap(code, true),
       sunrise: raw.daily.sunrise[idx] ?? '',
@@ -63,10 +68,10 @@ export function normalizeWeatherData(raw: OpenMeteoRawResponse, locationName: st
     utcOffsetSeconds: raw.utc_offset_seconds,
     fetchedAt: Date.now(),
     current: {
-      temperature: Math.round(raw.current.temperature_2m),
-      apparentTemperature: Math.round(raw.current.apparent_temperature),
+      temperature: raw.current.temperature_2m,
+      apparentTemperature: raw.current.apparent_temperature,
       humidity: raw.current.relative_humidity_2m,
-      windSpeed: Math.round(raw.current.wind_speed_10m),
+      windSpeed: raw.current.wind_speed_10m,
       windDirection: raw.current.wind_direction_10m,
       precipitation: raw.current.precipitation,
       cloudCover: raw.current.cloud_cover,
@@ -87,7 +92,7 @@ export function useWeather(location: CityLocation | null) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchWeather = useCallback(async (loc: CityLocation) => {
+  const fetchWeather = useCallback(async (loc: CityLocation, signal?: AbortSignal) => {
     const cacheKey = `weather_${loc.latitude.toFixed(4)}_${loc.longitude.toFixed(4)}`;
     const cached = weatherMemoryCache.get<NormalizedWeatherData>(cacheKey);
 
@@ -101,8 +106,15 @@ export function useWeather(location: CityLocation | null) {
     setIsLoading(true);
     setError(null);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    let isTimedOut = false;
+    const timeoutController = new AbortController();
+    const timeoutId = setTimeout(() => {
+      isTimedOut = true;
+      timeoutController.abort();
+    }, 8000);
+
+    const onExternalAbort = () => timeoutController.abort();
+    signal?.addEventListener('abort', onExternalAbort);
 
     try {
       const params = new URLSearchParams({
@@ -120,12 +132,19 @@ export function useWeather(location: CityLocation | null) {
           'uv_index',
           'is_day',
         ].join(','),
-        hourly: ['temperature_2m', 'precipitation', 'weather_code', 'is_day'].join(','),
+        hourly: [
+          'temperature_2m',
+          'precipitation',
+          'precipitation_probability',
+          'weather_code',
+          'is_day',
+        ].join(','),
         daily: [
           'weather_code',
           'temperature_2m_max',
           'temperature_2m_min',
           'precipitation_sum',
+          'precipitation_probability_max',
           'sunrise',
           'sunset',
           'uv_index_max',
@@ -135,7 +154,7 @@ export function useWeather(location: CityLocation | null) {
       });
 
       const res = await fetch(`${OPEN_METEO_FORECAST_URL}?${params.toString()}`, {
-        signal: controller.signal,
+        signal: timeoutController.signal,
       });
 
       if (!res.ok) {
@@ -148,25 +167,54 @@ export function useWeather(location: CityLocation | null) {
       weatherMemoryCache.set(cacheKey, normalized, CACHE_TTL_MS);
       setWeather(normalized);
     } catch (err: unknown) {
-      if ((err as Error).name !== 'AbortError') {
+      if (isTimedOut) {
+        setError('Weather request timed out. Please check your connection.');
+      } else if (signal?.aborted) {
+        // Request superseded by another city, leave silently
+      } else {
         setError('Unable to load weather forecast. Please try again.');
       }
     } finally {
       clearTimeout(timeoutId);
+      signal?.removeEventListener('abort', onExternalAbort);
       setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (location) {
-      fetchWeather(location);
-    }
+    if (!location) return;
+
+    const controller = new AbortController();
+    fetchWeather(location, controller.signal);
+
+    // Auto-refresh every 15 minutes
+    const interval = setInterval(() => {
+      const cacheKey = `weather_${location.latitude.toFixed(4)}_${location.longitude.toFixed(4)}`;
+      weatherMemoryCache.set(cacheKey, null, 0);
+      fetchWeather(location, controller.signal);
+    }, 15 * 60 * 1000);
+
+    // Auto-refresh when tab becomes visible again
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        const cacheKey = `weather_${location.latitude.toFixed(4)}_${location.longitude.toFixed(4)}`;
+        weatherMemoryCache.set(cacheKey, null, 0);
+        fetchWeather(location, controller.signal);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
   }, [location, fetchWeather]);
 
   const refetch = useCallback(() => {
     if (location) {
       const cacheKey = `weather_${location.latitude.toFixed(4)}_${location.longitude.toFixed(4)}`;
-      weatherMemoryCache.set(cacheKey, null, 0); // invalidate cache
+      weatherMemoryCache.set(cacheKey, null, 0);
       return fetchWeather(location);
     }
     return Promise.resolve();
